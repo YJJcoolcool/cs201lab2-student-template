@@ -1,4 +1,13 @@
-import java.util.*;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+/**
+ * Name: Yam Jun Jie
+ * Email: junjie.yam.2025@computing.smu.edu.sg
+ */
 
 public class SinglyLinkedList<E extends Comparable<E>> {
     private Node<E> head = null;
@@ -100,9 +109,70 @@ public class SinglyLinkedList<E extends Comparable<E>> {
     }
 
     // write your codes here
-    public void swap(){
+    /**
+     * Swaps elements such that:
+     * - Largest element swaps position with Smallest element
+     * - 2nd Largest element swaps position with 2nd Smallest element, etc.
+     */
+    public void swap() {
         
+        // Handle size 1 or empty linked lists
+        if (this.size <= 1 || this.head == null) return;
 
+        // Store the original order of nodes into an ArrayList
+        List<Node<E>> nodes = new ArrayList<>();
+        Node<E> current = this.head;
+        while (current != null) {
+            nodes.add(current);
+            current = current.getNext();
+        }
+
+        // Create a sorted copy of nodes to be used as a reference list
+        List<Node<E>> sortedNodes = new ArrayList<>(nodes);
+        sortedNodes.sort((a, b) -> a.getElement().compareTo(b.getElement()));
+
+        // Track current array index position for each node
+        Map<Node<E>, Integer> nodesIndexMap = new HashMap<>();
+        for (int i = 0; i < size; i++) {
+            nodesIndexMap.put(nodes.get(i), i);
+        }
+
+        // Swap positions of k-th smallest and k-th largest nodes
+        int n = size;
+        for (int k = 0; k < n / 2; k++) {
+            // k-th item from the front of the List
+            Node<E> smallest = sortedNodes.get(k);
+            // k-th item from the back of the List
+            Node<E> largest = sortedNodes.get(n - 1 - k);
+
+            if (smallest == largest) {
+                continue;
+            }
+
+            // Get the original index
+            int smallestIndex = nodesIndexMap.get(smallest);
+            int largestIndex = nodesIndexMap.get(largest);
+
+            if (smallestIndex == largestIndex) {
+                continue;
+            }
+
+            // Swap positions of the smallest and largest in the nodes list
+            nodes.set(smallestIndex, largest);
+            nodes.set(largestIndex, smallest);
+
+            // Update position map
+            nodesIndexMap.put(smallest, largestIndex);
+            nodesIndexMap.put(largest, smallestIndex);
+        }
+
+        // Re-link nodes and update head/tail
+        this.head = nodes.get(0);
+        for (int i = 0; i < n - 1; i++) {
+            nodes.get(i).setNext(nodes.get(i + 1));
+        }
+        nodes.get(n - 1).setNext(null);
+        this.tail = nodes.get(n - 1);
     }
    
 }
